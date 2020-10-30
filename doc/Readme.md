@@ -4,3 +4,6 @@ Fixed Path and Subtree Patterns
 
 The http.Handler Interface
 research try again
+
+// userful links
+https://itnext.io/building-restful-web-api-service-using-golang-chi-mysql-d85f427dee54
