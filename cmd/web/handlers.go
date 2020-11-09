@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -21,9 +22,10 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, snippet := range s {
-		fmt.Fprintf(w, "%v\n", snippet)
-	}
+	// Create an instance of a templateData struct holding the slice of
+	// snippets.
+
+	// data := &templateData{Snippets: s}
 
 	// files := []string{
 	// 	"./ui/html/home.page.tmpl",
@@ -33,23 +35,27 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 
 	// ts, err := template.ParseFiles(files...)
 	// if err != nil {
-	// 	// app.errorLog.Println(err.Error())
 	// 	app.serverError(w, err)
 	// 	return
 	// }
 
-	// err = ts.Execute(w, nil)
+	// Pass in the templateData struct when executing the template.
+	// err = ts.Execute(w, data)
 	// if err != nil {
-	// 	// log.Println(err.Error())
-	// 	// http.Error(w, "Internal Server Error", 500)
 	// 	app.serverError(w, err)
 	// }
+
+	// Use the new render helper.
+	app.render(w, r, "home.page.tmpl", &templateData{
+		Snippets: s,
+	})
 }
 
 // Change the signature of the showSnippet handler so it is defined as a method
 // against *application.
 func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	id, err := strconv.Atoi(r.URL.Query().Get(":id"))
+	log.Println(id)
 	if err != nil || id < 1 {
 		app.notFound(w)
 		return
@@ -67,8 +73,35 @@ func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	// fmt.Fprintf(w, "Display a specific snippet with ID %d...", id)
-	fmt.Fprintf(w, "%v", s)
+
+	// Create and instance of a templateData struct holding the snippet data.
+	// data := &templateData{Snippet: s}
+	//
+	// files := []string{
+	// 	"./ui/html/show.page.tmpl",
+	// 	"./ui/html/base.layout.tmpl",
+	// 	"./ui/html/footer.partial.tmpl",
+	// }
+
+	// Parse the template files...
+	// ts, err := template.ParseFiles(files...)
+	// if err != nil {
+	// 	app.serverError(w, err)
+	// 	return
+	// }
+
+	// And then execute them. Notice how we are passing in the snippet
+	// data (a models.Snippet struct) as the final parameter.
+	// err = ts.Execute(w, s)
+	// err = ts.Execute(w, data)
+	// if err != nil {
+	// 	app.serverError(w, err)
+	// }
+
+	// Use the new render helper.
+	app.render(w, r, "show.page.tmpl", &templateData{
+		Snippet: s,
+	})
 }
 
 func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
@@ -79,19 +112,29 @@ func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Create some variables holding dummy data. We'll remove these later on
-	// during the build.
-	title := "O snail"
-	content := "O snail\nClimb Mount Fuji,\nBut slowly, slowly!\n\n– Kobayashi Issa"
-	expires := "7"
-	// Pass the data to the SnippetModel.Insert() method, receiving the
-	// ID of the new record back.
+	err := r.ParseForm()
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	// Use the r.PostForm.Get() method to retrieve the relevant data fields
+	// from the r.PostForm map.
+
+	title := r.PostForm.Get("title")
+	content := r.PostForm.Get("content")
+	expires := r.PostForm.Get("expires")
+
 	id, err := app.snippets.Insert(title, content, expires)
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
 	// Redirect the user to the relevant page for the snippet.
-	http.Redirect(w, r, fmt.Sprintf("/snippet?id=%d", id), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/snippet/%d", id), http.StatusSeeOther)
 	// w.Write([]byte("Create a new snippet..."))
+}
+
+func (app *application) createSnippetForm(w http.ResponseWriter, r *http.Request) {
+	app.render(w, r, "create.page.tmpl", nil)
 }
