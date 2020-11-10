@@ -5,13 +5,18 @@ import (
 	"path/filepath"
 	"time"
 
+	"erdenebulgan.s/snippetbox/pkg/forms"
+
 	"erdenebulgan.s/snippetbox/pkg/models"
 )
 
 type templateData struct {
 	CurrentYear int
-	Snippet     *models.Snippet
-	Snippets    []*models.Snippet
+	// FormData    url.Values
+	// FormErrors  map[string]string
+	Form     *forms.Form
+	Snippet  *models.Snippet
+	Snippets []*models.Snippet
 }
 
 func newTemplateCache(dir string) (map[string]*template.Template, error) {
