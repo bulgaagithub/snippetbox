@@ -12,6 +12,7 @@ import (
 
 type templateData struct {
 	CurrentYear int
+	Flash       string
 	// FormData    url.Values
 	// FormErrors  map[string]string
 	Form     *forms.Form
