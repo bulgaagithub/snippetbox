@@ -20,6 +20,10 @@ import (
 // the web application. FOr now we'll only include fields for the two custom loggers, but
 // we'll add more to it as the build progresses.
 
+type contextKey string
+
+const contextKeyIsAuthenticated = contextKey("isAuthenticated")
+
 type application struct {
 	errorLog      *log.Logger
 	infoLog       *log.Logger
@@ -65,6 +69,8 @@ func main() {
 	// sessions always expires after 12 hours.
 	session := sessions.New([]byte(*secret))
 	session.Lifetime = 12 * time.Hour
+	session.Secure = true
+	session.SameSite = http.SameSiteStrictMode
 	// Initialize a new instance of application containing dependencies.
 	// And add the session manager to our application dependencies.
 	app := &application{

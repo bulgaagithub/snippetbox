@@ -10,14 +10,18 @@ import (
 	"erdenebulgan.s/snippetbox/pkg/models"
 )
 
+// Add a new IsAuthenticated field to the templateData struct.
+// Add a new CSRFToken field to the templateData.
 type templateData struct {
+	CSRFToken   string
 	CurrentYear int
 	Flash       string
 	// FormData    url.Values
 	// FormErrors  map[string]string
-	Form     *forms.Form
-	Snippet  *models.Snippet
-	Snippets []*models.Snippet
+	IsAuthenticated bool
+	Form            *forms.Form
+	Snippet         *models.Snippet
+	Snippets        []*models.Snippet
 }
 
 func newTemplateCache(dir string) (map[string]*template.Template, error) {

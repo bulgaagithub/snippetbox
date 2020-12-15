@@ -8,6 +8,7 @@ require (
 	github.com/golangcollege/sessions v1.2.0
 	github.com/graphql-go/graphql v0.7.9
 	github.com/justinas/alice v1.2.0
+	github.com/justinas/nosurf v1.1.1
 	golang.org/x/crypto v0.0.0-20200317142112-1b76d66859c6
 	google.golang.org/appengine v1.6.1 // indirect
 )
